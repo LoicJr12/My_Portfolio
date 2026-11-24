@@ -17,7 +17,7 @@ export default function ApiState({ state, route, children }) {
         <b>{offline ? 'Signal perdu' : `Erreur ${state.error.status}`}</b>
         <span>
           {offline
-            ? `Impossible de joindre l'API (${API_URL}). Lance le backend : just up && just seed && just dev`
+            ? `Impossible de joindre l'API (${API_URL}). URL incorrect ou Service non disponible !!`
             : state.error.message}
         </span>
         <code>{route}</code>
