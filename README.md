@@ -1,4 +1,4 @@
-# 🚀 Portfolio d'Ingénieur Polyglotte — Dépôt d'équipe
+# 🚀 Portfolio d'Ingénieur Polyglotte
 
 > Sujet complet, jalons et barème : **[Projet Portfolio](https://nosql-esigelec.github.io/course/portfolio/)**
 > · Grille d'évaluation : **[Grille d'évaluation](https://nosql-esigelec.github.io/course/portfolio/grille/)**
