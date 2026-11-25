@@ -1,3 +1,6 @@
+// Clé de stockage de la position de Nova — déclarée AVANT `journey`, qui la lit dès sa création
+const GUIDE_KEY = 'nova-position'
+
 // État partagé du "voyage" entre la page HTML et la scène 3D.
 // Objet mutable (pas de state React) : lu à chaque frame par Three.js sans re-render.
 export const journey = {
@@ -8,9 +11,33 @@ export const journey = {
   heroProgress: 0, // 0 → 1 sur le premier écran (robot qui rejoint son coin)
   forceCorner: false, // vrai hors de l'accueil : Nova reste dans son coin
   pointer: { x: 0, y: 0 }, // souris normalisée [-1, 1]
+  // Nova déplacé à la main : position du centre en fraction de l'écran { x, y } (0 → 1), ou null = placement auto
+  guidePos: loadGuidePos(),
+  guideDragging: false, // vrai pendant qu'on fait glisser Nova
+  guideHover: false, // survol de Nova (petit grossissement)
   reducedMotion:
     typeof window !== 'undefined' &&
     window.matchMedia('(prefers-reduced-motion: reduce)').matches,
+}
+
+function loadGuidePos() {
+  try {
+    const v = JSON.parse(window.localStorage.getItem(GUIDE_KEY))
+    return v && Number.isFinite(v.x) && Number.isFinite(v.y) ? v : null
+  } catch {
+    return null
+  }
+}
+
+// Mémorise la position choisie (null = retour au placement automatique)
+export function setGuidePos(pos) {
+  journey.guidePos = pos
+  try {
+    if (pos) window.localStorage.setItem(GUIDE_KEY, JSON.stringify(pos))
+    else window.localStorage.removeItem(GUIDE_KEY)
+  } catch {
+    /* stockage indisponible (navigation privée…) : la position vaut pour cette visite */
+  }
 }
 
 let started = false

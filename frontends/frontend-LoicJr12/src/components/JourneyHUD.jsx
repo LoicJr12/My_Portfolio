@@ -21,7 +21,7 @@ export default function JourneyHUD({ active }) {
 
   return (
     <>
-      <aside className="hud-stops">
+      <nav className="hud-stops" aria-label="Escales du voyage">
         <div className="hud-stops__track">
           <div ref={bar} className="hud-stops__fill" />
         </div>
@@ -30,13 +30,15 @@ export default function JourneyHUD({ active }) {
             key={s.id}
             href={`#${s.id}`}
             className={`hud-stops__dot ${i === active ? 'is-active' : ''} ${i < active ? 'is-past' : ''}`}
+            aria-label={s.label}
+            aria-current={i === active ? 'location' : undefined}
             style={{ '--c': s.color }}
           >
             <span>{s.label}</span>
           </a>
         ))}
-      </aside>
-      <div className={`hud-distance ${active > 0 ? 'is-visible' : ''}`}>
+      </nav>
+      <div className={`hud-distance ${active > 0 ? 'is-visible' : ''}`} aria-hidden="true">
         <span>Distance parcourue</span>
         <b ref={distance}>0.00</b> <i>années-lumière</i>
       </div>

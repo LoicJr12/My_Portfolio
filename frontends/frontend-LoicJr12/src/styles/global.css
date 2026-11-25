@@ -39,6 +39,42 @@ a {
   text-decoration: none;
 }
 
+/* ---------- Accessibilité ---------- */
+:focus-visible {
+  outline: 2px solid var(--lime);
+  outline-offset: 3px;
+  border-radius: 4px;
+}
+.skip-link {
+  position: fixed;
+  top: 0.75rem;
+  left: 0.75rem;
+  z-index: 100;
+  padding: 0.7rem 1.1rem;
+  border-radius: 0.6rem;
+  background: var(--lime);
+  color: #000;
+  font-family: var(--font-display);
+  font-size: 0.75rem;
+  font-weight: 700;
+  transform: translateY(-160%);
+  transition: transform 0.2s;
+}
+.skip-link:focus {
+  transform: none;
+}
+main:focus {
+  outline: none;
+}
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  overflow: hidden;
+  clip: rect(0 0 0 0);
+  white-space: nowrap;
+}
+
 ::selection {
   background: var(--lime);
   color: #000;
@@ -53,6 +89,25 @@ a {
   position: fixed;
   inset: 0;
   z-index: 0;
+  animation: spaceIn 1.2s ease-out both;
+}
+/* En attendant Three.js : un ciel étoilé en CSS pur, pour ne jamais afficher un écran vide */
+.universe--loading {
+  animation: none;
+  background:
+    radial-gradient(1px 1px at 12% 22%, #fff8, transparent),
+    radial-gradient(1px 1px at 68% 14%, #fff6, transparent),
+    radial-gradient(1.5px 1.5px at 82% 62%, #2de2e6aa, transparent),
+    radial-gradient(1px 1px at 33% 78%, #fff6, transparent),
+    radial-gradient(1.5px 1.5px at 52% 40%, #d4ff3a99, transparent),
+    radial-gradient(1px 1px at 90% 88%, #fff5, transparent),
+    radial-gradient(circle at 30% 30%, #1a103044, transparent 60%),
+    var(--bg);
+}
+@keyframes spaceIn {
+  from {
+    opacity: 0;
+  }
 }
 
 /* Le contenu laisse passer la souris vers la 3D, sauf sur les éléments interactifs */
@@ -376,6 +431,32 @@ a {
   animation: wheel 1.6s infinite;
 }
 
+/* ---------- Poignée de Nova (cliquer / glisser) ---------- */
+.nova-handle {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 24; /* au-dessus du contenu, sous la bulle */
+  padding: 0;
+  border: 0;
+  border-radius: 40%;
+  background: transparent;
+  cursor: grab;
+  touch-action: none; /* sur mobile : glisser Nova ne fait pas défiler la page */
+  -webkit-tap-highlight-color: transparent;
+  will-change: transform;
+}
+.nova-handle.is-dragging {
+  cursor: grabbing;
+}
+.nova-handle:focus-visible {
+  outline: 2px dashed var(--lime);
+  outline-offset: 4px;
+}
+body:has(.nova-handle.is-dragging) {
+  user-select: none; /* pas de texte sélectionné pendant le glisser */
+}
+
 /* ---------- Bulle du robot guide ---------- */
 .bubble-anchor {
   position: fixed;
@@ -457,6 +538,20 @@ a {
   font-size: 0.6rem;
   letter-spacing: 0.15em;
   color: var(--muted);
+}
+
+/* La bulle change de côté quand Nova est près d'un bord (data-side posé par Guide.jsx) */
+.bubble-anchor[data-side='right above'] .bubble {
+  transform: translate(0, -100%);
+  border-radius: 1rem 1rem 1rem 0.2rem;
+}
+.bubble-anchor[data-side='left below'] .bubble {
+  transform: translate(-100%, 0);
+  border-radius: 1rem 0.2rem 1rem 1rem;
+}
+.bubble-anchor[data-side='right below'] .bubble {
+  transform: none;
+  border-radius: 0.2rem 1rem 1rem 1rem;
 }
 
 /* ---------- HUD du voyage ---------- */
@@ -1082,7 +1177,7 @@ a {
   animation: fadeUp 0.35s both;
 }
 .fiche--empty {
-  --c: rgba(255, 255, 255, 0.2);
+  --c: var(--muted); /* contraste suffisant (WCAG AA) */
 }
 .fiche--empty ul {
   margin: 0.8rem 0 0;
@@ -1390,7 +1485,7 @@ a {
   margin-left: 0.5rem;
   letter-spacing: 0.04em;
   text-transform: none;
-  color: rgba(255, 255, 255, 0.3);
+  color: #7d8396; /* contraste ≥ 4.5:1 sur le fond */
 }
 .filter-row__chips {
   display: flex;
@@ -2440,6 +2535,54 @@ a {
   }
 }
 
+/* Liste accessible de la constellation */
+.graph-list {
+  grid-column: 1 / -1;
+  padding: 0.9rem 1.2rem;
+  border: 1px solid var(--line);
+  border-radius: 1rem;
+  background: var(--glass);
+  backdrop-filter: blur(10px);
+  pointer-events: auto;
+}
+.graph-list summary {
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: #c9cdd9;
+  cursor: pointer;
+}
+.graph-list__group {
+  margin-top: 1rem;
+}
+.graph-list .chips button {
+  border: 0;
+  background: none;
+  padding: 0;
+  font: inherit;
+  color: inherit;
+  cursor: pointer;
+}
+.graph-list .chips li:has(button[aria-pressed='true']) {
+  border-color: var(--c);
+  background: color-mix(in srgb, var(--c) 18%, transparent);
+}
+
+/* ---------- Chargements à la demande ---------- */
+.graph--loading,
+.route-loading {
+  display: grid;
+  place-items: center;
+  font-family: var(--font-mono);
+  font-size: 0.8rem;
+  letter-spacing: 0.15em;
+  color: var(--muted);
+}
+.route-loading {
+  min-height: 100vh;
+}
+
 /* ---------- Mobile ---------- */
 @media (max-width: 1100px) {
   .hud-distance {
@@ -2453,13 +2596,31 @@ a {
     display: none;
   }
   .hero {
-    padding-top: 9rem;
+    padding-top: 15rem; /* Nova occupe le haut de l'écran */
   }
   .hero__stats {
     grid-template-columns: repeat(2, minmax(0, 1fr));
   }
   .hud-stops {
     right: 0.5rem;
+  }
+  .hud-stops__dot span {
+    display: none; /* pas la place pour les noms : les points suffisent */
+  }
+  .bubble:not(.bubble--mini) {
+    width: min(14rem, 64vw); /* la pastille repliée garde sa petite taille */
+    padding: 0.7rem 0.85rem 0.65rem;
+  }
+  .bubble p {
+    min-height: 0;
+    font-size: 0.82rem;
+  }
+  .bubble__hint {
+    display: none;
+  }
+  /* De l'espace en fin de section pour que Nova (coin bas-droit) ne cache rien */
+  .stop {
+    padding-bottom: 9rem;
   }
   .rail {
     padding-left: 3rem;

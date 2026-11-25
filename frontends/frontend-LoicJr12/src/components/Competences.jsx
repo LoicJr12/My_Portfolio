@@ -1,7 +1,10 @@
-import { useMemo, useState } from 'react'
+import { lazy, Suspense, useMemo, useState } from 'react'
 import { Link } from 'react-router-dom'
 import ApiState from './ApiState'
-import SkillGraph, { NODE_STYLE } from '../three/SkillGraph'
+import { NODE_STYLE } from '../three/nodeStyle'
+
+// Le graphe 3D (et son moteur physique d3) n'est téléchargé qu'au besoin
+const SkillGraph = lazy(() => import('../three/SkillGraph'))
 import { CANDIDAT_SLUG } from '../config'
 import { nodeLabel } from '../content/domaines'
 
@@ -95,6 +98,36 @@ function FicheList({ titre, items, onSelect, projet }) {
         ))}
       </ul>
     </div>
+  )
+}
+
+// Alternative accessible au graphe 3D : les mêmes astres, utilisables au clavier et au lecteur d'écran
+function GraphList({ graph, selected, onSelect }) {
+  const types = ['Domaine', 'Projet', 'Competence']
+  return (
+    <details className="graph-list">
+      <summary>Explorer la constellation sous forme de liste</summary>
+      {types.map((type) => {
+        const nodes = graph.nodes.filter((n) => n.type === type).sort((a, b) => nodeLabel(a).localeCompare(nodeLabel(b)))
+        if (!nodes.length) return null
+        return (
+          <div key={type} className="graph-list__group" style={{ '--c': NODE_STYLE[type].color }}>
+            <p className="fiche__sub">
+              {NODE_STYLE[type].label} ({nodes.length})
+            </p>
+            <ul className="chips">
+              {nodes.map((n) => (
+                <li key={n.id}>
+                  <button type="button" aria-pressed={selected === n.id} onClick={() => onSelect(selected === n.id ? null : n.id)}>
+                    {nodeLabel(n)}
+                  </button>
+                </li>
+              ))}
+            </ul>
+          </div>
+        )
+      })}
+    </details>
   )
 }
 
@@ -215,7 +248,9 @@ export default function Competences({ graph, stats, candidat }) {
         {(g) => (
           <div className="observatoire">
             <div className="observatoire__view">
-              <SkillGraph graph={g} niveaux={niveaux} selected={selected} onSelect={setSelected} />
+              <Suspense fallback={<div className="graph graph--loading">Calcul de la constellation…</div>}>
+                <SkillGraph graph={g} niveaux={niveaux} selected={selected} onSelect={setSelected} />
+              </Suspense>
               <ul className="legend">
                 {Object.entries(NODE_STYLE).map(([type, s]) => (
                   <li key={type} style={{ '--c': s.color }} className={`legend--${type}`}>
@@ -225,6 +260,7 @@ export default function Competences({ graph, stats, candidat }) {
               </ul>
             </div>
             <Fiche id={selected} graph={g} candidat={candidat.data} stats={stats.data} onSelect={setSelected} />
+            <GraphList graph={g} selected={selected} onSelect={setSelected} />
           </div>
         )}
       </ApiState>

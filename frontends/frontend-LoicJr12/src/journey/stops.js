@@ -11,6 +11,7 @@ export const STOPS = [
       ({ candidat }) => (candidat ? `Loïc est ${candidat.titre}. Embarque, je te fais la visite !` : null),
       'Fais défiler la page pour décoller : chaque escale révèle une partie de son parcours.',
       "Astuce : clique sur moi quand tu veux, j'ai toujours quelque chose à dire.",
+      'Psst : fais-moi glisser pour me poser où tu veux sur l’écran. Double-clic pour me remettre à ma place !',
     ],
   },
   {

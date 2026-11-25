@@ -17,7 +17,7 @@ function OrbitMap({ source, items, max, hovered, setHovered, mine }) {
   const orbits = [...new Set(points.map((p) => Math.round(p.r)))]
 
   return (
-    <svg className="orbit-map" viewBox={`0 0 ${W} ${H}`} role="img" aria-label={`Carte des projets voisins de ${source}`}>
+    <svg className="orbit-map" viewBox={`0 0 ${W} ${H}`} role="group" aria-label={`Carte des projets voisins de ${source}`}>
       <defs>
         <radialGradient id="src-glow">
           <stop offset="0%" stopColor="var(--p)" stopOpacity="0.9" />

@@ -1,6 +1,6 @@
-import { Suspense } from 'react'
+import { Suspense, useState } from 'react'
 import { Canvas, useFrame } from '@react-three/fiber'
-import { Environment, Lightformer } from '@react-three/drei'
+import { Environment, Lightformer, PerformanceMonitor } from '@react-three/drei'
 import * as THREE from 'three'
 import { Stars, WarpStreaks } from './Starfield'
 import { Nebula, Planets } from './Cosmos'
@@ -21,13 +21,16 @@ function CameraRig() {
 }
 
 const isMobile = typeof window !== 'undefined' && window.innerWidth < 768
+const MAX_DPR = isMobile ? 1.5 : 2
 
 export default function Universe({ guide, bubbleRef }) {
+  // Résolution adaptative : si l'appareil peine (FPS en baisse), on rend la 3D en résolution 1×
+  const [dpr, setDpr] = useState(MAX_DPR)
   return (
     <div className="universe" aria-hidden="true">
       <Canvas
         camera={{ position: [0, 0, 8], fov: 50, near: 0.1, far: 400 }}
-        dpr={[1, isMobile ? 1.5 : 2]}
+        dpr={dpr}
         gl={{ antialias: true, powerPreference: 'high-performance' }}
         // Les événements viennent de toute la page : le robot reste cliquable sous le contenu HTML
         eventSource={document.getElementById('root')}
@@ -35,6 +38,7 @@ export default function Universe({ guide, bubbleRef }) {
       >
         <color attach="background" args={['#03040a']} />
         <fog attach="fog" args={['#03040a', 60, 220]} />
+        <PerformanceMonitor onDecline={() => setDpr(1)} onIncline={() => setDpr(MAX_DPR)} flipflops={3} onFallback={() => setDpr(1)} />
         <CameraRig />
 
         <ambientLight intensity={0.4} />

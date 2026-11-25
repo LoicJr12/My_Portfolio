@@ -1,6 +1,6 @@
 import { useEffect, useRef } from 'react'
 import { useLocation } from 'react-router-dom'
-import Universe from '../three/Universe'
+import Universe from '../three/LazyUniverse'
 import Navbar from '../components/Navbar'
 import Hero from '../components/Hero'
 import JourneyHUD from '../components/JourneyHUD'
@@ -21,6 +21,7 @@ import { useActiveStop } from '../journey/useActiveStop'
 export default function Home() {
   useEffect(() => {
     startJourneyTracking()
+    document.title = 'Loïc KAKOU — Portfolio 3D'
   }, [])
 
   // Arrivée depuis une autre page avec une ancre (ex. /#projets) → on rejoint l'escale
@@ -59,12 +60,14 @@ export default function Home() {
 
   return (
     <>
+      <a href="#contenu" className="skip-link">
+        Aller au contenu
+      </a>
       <Universe guide={guide} bubbleRef={bubbleRef} />
-      <GuideBubble ref={bubbleRef} text={guide.text} hasMore={guide.hasMore} onNext={guide.next} />
       <Navbar prenom={profil.prenom} nom={profil.nom} active={active} />
       <JourneyHUD active={active} />
 
-      <main className="content">
+      <main id="contenu" tabIndex={-1} className="content">
         <Hero profil={profil} stats={chiffres} />
         <Parcours candidat={candidat} recente={recente} />
         <Competences graph={graph} stats={stats} candidat={candidat} />
@@ -72,6 +75,9 @@ export default function Home() {
 
         <Contact candidat={candidat.data} />
       </main>
+
+      {/* Placée après le contenu : au clavier, on atteint d'abord la page, puis Nova */}
+      <GuideBubble ref={bubbleRef} text={guide.text} hasMore={guide.hasMore} onNext={guide.next} />
     </>
   )
 }

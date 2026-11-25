@@ -1,6 +1,6 @@
 import { useEffect, useMemo, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router-dom'
-import Universe from '../three/Universe'
+import Universe from '../three/LazyUniverse'
 import Navbar from '../components/Navbar'
 import GuideBubble from '../components/GuideBubble'
 import ApiState from '../components/ApiState'
@@ -253,18 +253,16 @@ export default function ProjetDetail() {
 
   return (
     <>
+      <a href="#contenu" className="skip-link">
+        Aller au contenu
+      </a>
       <Universe guide={guide} bubbleRef={bubbleRef} />
-      <GuideBubble ref={bubbleRef} text={guide.text} hasMore={guide.hasMore} onNext={guide.next} />
       <Navbar prenom={profil.prenom} nom={profil.nom} />
 
-      <main className="content detail-page">
+      <main id="contenu" tabIndex={-1} className="content detail-page">
         <ApiState state={projet} route={`GET /api/projets/${slug}`}>
           {(p) => (
             <>
-              <div className="query-line query-line--top">
-                <span className="query-line__tag">R6</span>
-                <code>GET /api/projets/{slug}</code>
-              </div>
               <Fiche projet={p} noms={noms} candidat={profil} />
 
               <section className="detail__voisins" style={{ '--c': 'var(--cyan)', '--p': domaineColor(mainDomaine(p)) }}>
@@ -294,6 +292,9 @@ export default function ProjetDetail() {
           </Link>
         )}
       </main>
+
+      {/* Placée après le contenu : au clavier, on atteint d'abord la page, puis Nova */}
+      <GuideBubble ref={bubbleRef} text={guide.text} hasMore={guide.hasMore} onNext={guide.next} />
     </>
   )
 }

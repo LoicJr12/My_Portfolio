@@ -37,7 +37,8 @@ function Wing({ side, geometry }) {
   useFrame(({ clock }) => {
     const t = clock.elapsedTime
     // Battement plus rapide quand on défile vite
-    const boost = Math.min(Math.abs(journey.velocity) / 3000, 1)
+    // Battement maximal quand on transporte Nova
+    const boost = journey.guideDragging ? 1 : Math.min(Math.abs(journey.velocity) / 3000, 1)
     const flap = Math.sin(t * (6 + boost * 10)) * (0.35 + boost * 0.25)
     ref.current.rotation.y = side * (0.55 + flap)
     ref.current.rotation.z = side * (0.25 + flap * 0.3)

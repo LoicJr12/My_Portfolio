@@ -5,13 +5,9 @@ import * as THREE from 'three'
 import { nodeLabel } from '../content/domaines'
 import { forceSimulation, forceLink, forceManyBody, forceCenter, forceCollide } from 'd3-force-3d'
 
-// Apparence de chaque type de nœud du graphe Neo4j (R5) : couleur + forme
-export const NODE_STYLE = {
-  Candidat: { color: '#d4ff3a', label: 'Candidat' },
-  Domaine: { color: '#a78bfa', label: 'Domaines' },
-  Projet: { color: '#ff3d7f', label: 'Projets' },
-  Competence: { color: '#2de2e6', label: 'Compétences' },
-}
+import { NODE_STYLE } from './nodeStyle'
+
+export { NODE_STYLE }
 
 const LINK_DISTANCE = { MAITRISE: 9, A_REALISE: 7, UTILISE: 5, APPARTIENT_A: 4 }
 
