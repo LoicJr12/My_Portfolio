@@ -32,7 +32,7 @@ just install     # uv sync (backend)
 just dev         # API sur http://localhost:8000/docs
 just test        # tests du backend
 npm install      # Télécharge les packages du front (frontend)
-npm run dev      # Front React sur http://localhost:3000
+npm run dev      # Front React sur http://localhost:3000 (frontend)
 ```
 
 > Neo4j Browser : http://localhost:7475 — connexion `bolt://localhost:7688`, identifiants `neo4j` / `password`.
